@@ -13,11 +13,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var clearButton: UIButton!
     @IBOutlet weak var displayLabel: UILabel!
     
-    var firstNumber: String = ""
-    var secondNumber: String = ""
-    var selectedOperator = ""
     var isAC = true
     var justSolved = false
+    var operationJustPressed = false
+    var stack = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,89 +37,83 @@ class ViewController: UIViewController {
             clearButton.titleLabel!.text! = "C"
         }
         
-        if displayLabel.text == "0" || justSolved {
+        if displayLabel.text == "0" || justSolved || operationJustPressed {
             displayLabel.text = num
             justSolved = false
+            operationJustPressed = false
         } else {
             displayLabel.text = displayLabel.text! + num
-        }
-        
-        if selectedOperator.characters.count == 0 {
-            firstNumber = displayLabel.text!
-        } else {
-            secondNumber = displayLabel.text!
         }
     }
     
     @IBAction func operationPressed(sender: UIButton) {
         let operation: String = sender.titleLabel!.text!
-        selectedOperator = operation
-        
-        if justSolved {
-            firstNumber = displayLabel.text!
+        operationJustPressed = true
+        if stack.count == 2 {
+            stack.append(displayLabel.text!)
+            let newResult = performOperation()
+            clearStack()
+            stack.append(newResult)
+            displayLabel.text! = newResult
+        } else {
+            stack.append(displayLabel.text!)
         }
-        
-        displayLabel.text = "0"
+        stack.append(operation)
     }
     
+    // Multiplies the current value by -1
     @IBAction func plusMinusPressed(sender: UIButton) {
-        
-        if selectedOperator.characters.count == 0 {
-            firstNumber = String(Double(firstNumber)! * -1)
-            displayLabel.text = firstNumber
-        } else {
-            secondNumber = String(Double(secondNumber)! * -1)
-            displayLabel.text = secondNumber
-        }
+        displayLabel.text = String(Double(displayLabel.text!)! * -1)
     }
     
+    // Divides the current value by 100
     @IBAction func percentPressed(sender: UIButton) {
-        var num = 0.0
-        if selectedOperator.characters.count == 0 {
-            num = Double(firstNumber)! / 100
-            firstNumber = String(num)
-            displayLabel.text = firstNumber
-        } else {
-            num = Double(secondNumber)! / 100
-            secondNumber = String(num)
-            displayLabel.text = firstNumber
-        }
+        displayLabel.text = String(Double(displayLabel.text!)! / 100)
     }
     
     @IBAction func equalsPressed(sender: UIButton) {
-        displayLabel.text = performOperation(selectedOperator)
-        resetValues()
+        stack.append(displayLabel.text!)
+        displayLabel.text = performOperation()
+        clearStack()
         justSolved = true
     }
     
-    func performOperation(operation: String) -> String {
+    func performOperation() -> String {
+        
         var result: Double = 0
-        switch selectedOperator {
-        case "+":
-            result = Double(firstNumber)! + Double(secondNumber)!
-        case "-":
-            result = Double(firstNumber)! - Double(secondNumber)!
-        case "x":
-            result = Double(firstNumber)! * Double(secondNumber)!
-        case "/":
-            result = Double(firstNumber)! / Double(secondNumber)!
-        default:
-            break
+        
+        if stack.count == 3 {
+            switch stack[1] {
+            case "+":
+                result = Double(stack[0])! + Double(stack[2])!
+            case "-":
+                result = Double(stack[0])! - Double(stack[2])!
+            case "x":
+                result = Double(stack[0])! * Double(stack[2])!
+            case "/":
+                result = Double(stack[0])! / Double(stack[2])!
+            default:
+                break
+            }
         }
         return String(result)
     }
     
+    // Pressing C will clear the first number, AC will clear everything
     @IBAction func clearPressed(sender: UIButton) {
+        
+        if clearButton.titleLabel!.text! == "C" {
+            displayLabel.text = "0"
+        } else {
+            justSolved = false
+            clearStack()
+        }
+        
         isAC = true
-        displayLabel.text = "0"
-        justSolved = false
-        resetValues()
     }
     
-    func resetValues() {
-        firstNumber = ""
-        secondNumber = ""
-        selectedOperator = ""
+    func clearStack() {
+        stack = []
     }
     
 }

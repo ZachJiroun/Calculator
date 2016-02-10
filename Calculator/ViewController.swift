@@ -35,6 +35,7 @@ class ViewController: UIViewController {
     @IBAction func numberPressed(sender: UIButton) {
         let num: String = sender.titleLabel!.text!
         
+        // Changes AC to C when a number is pressed
         if isAC {
             isAC = false
             clearButton.titleLabel!.text! = "C"
@@ -53,6 +54,7 @@ class ViewController: UIViewController {
     @IBAction func operationPressed(sender: UIButton) {
         let operation: String = sender.titleLabel!.text!
         operandJustPressed = true
+        // Evaluates continuous expressions. Ex. 5 * 2 + 1
         if stack.count == 2 {
             stack.append(displayLabel.text!)
             let newResult = performOperation()
@@ -85,7 +87,6 @@ class ViewController: UIViewController {
     
     // Performs calculations based off the stack, returns "0" if stack does contain 3 elements.
     func performOperation() -> String {
-        
         var result: Double = 0
         
         if stack.count == 3 {

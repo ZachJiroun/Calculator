@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        clearButton.titleLabel?.textAlignment = NSTextAlignment.Center
+        clearButton.titleLabel!.textAlignment = NSTextAlignment.Center
     }
     
     override func didReceiveMemoryWarning() {

@@ -13,9 +13,11 @@ class ViewController: UIViewController {
     @IBOutlet weak var clearButton: UIButton!
     @IBOutlet weak var displayLabel: UILabel!
     
-    var isAC = true
-    var justSolved = false
-    var operationJustPressed = false
+    var isAC = true // Determines if the clear button functions as AC or C
+    var justSolved = false // Prevents appending onto a displayed solved calculation.
+    var operandJustPressed = false // Resets the displayLabel after an operand is pressed.
+    
+    // Represents the calculation values as Strings [Value1, Operand, Value2]. Max of 3 values. Ex. ["1", "+", "2"]
     var stack = [String]()
     
     override func viewDidLoad() {
@@ -29,6 +31,7 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // Determines UI State when a number/decimal is tapped
     @IBAction func numberPressed(sender: UIButton) {
         let num: String = sender.titleLabel!.text!
         
@@ -37,18 +40,19 @@ class ViewController: UIViewController {
             clearButton.titleLabel!.text! = "C"
         }
         
-        if displayLabel.text == "0" || justSolved || operationJustPressed {
+        if displayLabel.text == "0" || justSolved || operandJustPressed {
             displayLabel.text = num
             justSolved = false
-            operationJustPressed = false
+            operandJustPressed = false
         } else {
             displayLabel.text = displayLabel.text! + num
         }
     }
     
+    // Determines UIState when an operand is tapped
     @IBAction func operationPressed(sender: UIButton) {
         let operation: String = sender.titleLabel!.text!
-        operationJustPressed = true
+        operandJustPressed = true
         if stack.count == 2 {
             stack.append(displayLabel.text!)
             let newResult = performOperation()
@@ -71,6 +75,7 @@ class ViewController: UIViewController {
         displayLabel.text = String(Double(displayLabel.text!)! / 100)
     }
     
+    // Updates the displayLabel with the results of a calculation.
     @IBAction func equalsPressed(sender: UIButton) {
         stack.append(displayLabel.text!)
         displayLabel.text = performOperation()
@@ -78,6 +83,7 @@ class ViewController: UIViewController {
         justSolved = true
     }
     
+    // Performs calculations based off the stack, returns "0" if stack does contain 3 elements.
     func performOperation() -> String {
         
         var result: Double = 0
